@@ -1,14 +1,14 @@
-package nu.wasis.github.screen.model;
+package nu.wasis.github.screen.model.github;
 
 import java.util.Date;
 
-public class GithubConfiguration {
+public class Configuration {
 
     private final String username;
     private final String reponame;
     private final Date date;
 
-    public GithubConfiguration(final String username, final String reponame, final Date date) {
+    public Configuration(final String username, final String reponame, final Date date) {
         this.username = username;
         this.reponame = reponame;
         this.date = date;
