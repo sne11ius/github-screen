@@ -1,50 +1,79 @@
 package nu.wasis.github.screen.service;
 
-import java.text.SimpleDateFormat;
+import java.awt.Color;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
-import nu.wasis.github.screen.model.Pixel;
 import nu.wasis.github.screen.model.Screen;
-import nu.wasis.github.screen.model.github.Configuration;
-
-import org.apache.log4j.Logger;
-import org.jboss.resteasy.client.ClientRequest;
 
 public class GithubService {
-
-    private static final String GITHUB_SCREEN_ENDPOINT = "https://github.com/users/{username}/contributions_calendar_data";
-    // https://github.com/sne11ius?tab=contributions&from=2013-02-20&_pjax=%23contribution-activity
-    // private static final String GITHUB_SCREEN_ENDPOINT =
-    // "https://github.com/{username}?tab=contributions&from={date}";// "&_pjax=%23contribution-activity";
-    @SuppressWarnings("unused")
-    private static final Logger LOG = Logger.getLogger(GithubService.class);
+    private static final String contentfilename = "contentfile";
 
     public static final GithubService INSTANCE = new GithubService();
-    private static final SimpleDateFormat DATE_PARSER = new SimpleDateFormat("yyyy/MM/dd");
 
     private GithubService() {
     }
 
-    public Screen loadScreen(final Configuration configuration) throws Exception {
-        final String calendarData = getCalendarData(configuration);
-        final String[] data = calendarData.replace("[", "").replace("]", "").replace("\"", "").split(",");
-        final Screen screen = new Screen();
-        for (int i = 0; i < data.length - 1; i += 2) {
-            final String date = data[i];
-            final int contributions = Integer.parseInt(data[i + 1]);
-            screen.addPixel(new Pixel(DATE_PARSER.parse(date), contributions));
+    public String getResetRepositoryCommand(final String githubUri) {
+        final String deleteAll = "rm -rf ./* && rm -rf ./.git";
+        final String init = "git init";
+        final String createReadme = "echo 'wooohaha!' > README";
+        final String createContentFile = "touch " + contentfilename;
+        final String addAll = "git add *";
+        final String commit = "git commit -am 'test'";
+        final String addRemote = "git remote add origin " + githubUri;
+        final String push = "git push -u --force origin master";
+        return chain(deleteAll, init, createReadme, createContentFile, addAll, commit, addRemote, push);
+    }
+
+    public String getPrintSreenCommand(final Screen screen) {
+        return getPrintSreenCommand(screen, new Date());
+    }
+
+    private String getPrintSreenCommand(final Screen screen, final Date baseDate) {
+        final StringBuilder builder = new StringBuilder(10000);
+
+        for (int x = 0; x < Screen.MAX_WIDTH; ++x) {
+            for (int y = 0; y < Screen.MAX_HEIGHT; ++y) {
+                final Color color = screen.getPixel(x, y);
+                final int intensity = color.getGreen() / 10;
+                for (int i = 0; i < intensity; ++i) {
+                    final Date date = getDate(x, y, i);
+                    final String dateString = date.toString();
+                    builder.append("echo " + Math.random() + " > " + contentfilename + " && git commit -am 'x' --date '" + dateString + "'; ");
+                }
+            }
         }
-        return screen;
+
+        return builder.toString();
     }
 
-    public void setScreen(final Configuration configuration, final Screen screen) {
-
+    private String chain(final String... args) {
+        String result = "";
+        for (int i = 0; i < args.length - 1; ++i) {
+            result += args[i] + " && ";
+        }
+        return result + args[args.length - 1];
     }
 
-    private String getCalendarData(final Configuration configuration) throws Exception {
-        // https://github.com/sne11ius?tab=contributions&from=2013-02-20&_pjax=%23contribution-activity
-        final ClientRequest request = new ClientRequest(GITHUB_SCREEN_ENDPOINT);
-        request.pathParameter("username", configuration.getUsername());
-        return request.get(String.class).getEntity();
+    public Date getDate(final int x, final int y, final int minuteOffset) {
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
+        cal.setFirstDayOfWeek(Calendar.SUNDAY);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 0);
+        cal.add(Calendar.YEAR, -1);
+        cal.add(Calendar.WEEK_OF_YEAR, 1);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+
+        cal.add(Calendar.MINUTE, minuteOffset);
+
+        cal.add(Calendar.WEEK_OF_YEAR, x);
+        cal.add(Calendar.DAY_OF_WEEK, y);
+
+        return cal.getTime();
     }
 
 }
