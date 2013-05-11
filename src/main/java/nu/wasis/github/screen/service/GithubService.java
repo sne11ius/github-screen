@@ -9,7 +9,7 @@ import nu.wasis.github.screen.model.Screen;
 
 public class GithubService {
     private static final String contentfilename = "contentfile";
-    private static final String README_CONTENT = "github screen output\n=============\n\nsee https://github.com/sne11ius/github-screen";
+    private static final String README_CONTENT = "github screen output\n====================\n\nsee https://github.com/sne11ius/github-screen";
 
     public static final GithubService INSTANCE = new GithubService();
 
@@ -19,7 +19,7 @@ public class GithubService {
     public String getResetRepositoryCommand(final String githubUri) {
         final String deleteAll = "rm -rf ./* && rm -rf ./.git";
         final String init = "git init";
-        final String createReadme = "echo '" + README_CONTENT + "' > README";
+        final String createReadme = "echo '" + README_CONTENT + "' > README.md";
         final String createContentFile = "touch " + contentfilename;
         final String addAll = "git add *";
         final String commit = "git commit -am 'test'";

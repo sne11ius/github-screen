@@ -13,11 +13,11 @@ public class GithubScreen {
 
     private static final Logger LOG = Logger.getLogger(GithubScreen.class);
 
-    private static final String USERNAME = "screen-controller";
+    private static final String USERNAME = "screen-displayer";
 
     public static void main(final String[] args) throws Exception {
         final Screen screen = new Screen("/home/cornelius/src/github-screen/src/main/resources/awesome.png");
-        final String resetRepositoryCommand = GithubService.INSTANCE.getResetRepositoryCommand("https://github.com/" + USERNAME + "/screen-slave");
+        final String resetRepositoryCommand = GithubService.INSTANCE.getResetRepositoryCommand("https://github.com/" + USERNAME + "/display");
         final String printSreenCommand = GithubService.INSTANCE.getPrintSreenCommand(screen);
 
         final String filename = "/home/cornelius/bin/doit";
