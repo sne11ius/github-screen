@@ -54,7 +54,7 @@ public class GithubService {
         for (int i = 0; i < args.length - 1; ++i) {
             result += args[i] + " && ";
         }
-        return result + args[args.length - 1];
+        return result + args[args.length - 1] + "; ";
     }
 
     public Date getDate(final int x, final int y, final int minuteOffset) {
