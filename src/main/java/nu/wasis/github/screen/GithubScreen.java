@@ -16,7 +16,7 @@ public class GithubScreen {
     private static final String USERNAME = "screen-controller";
 
     public static void main(final String[] args) throws Exception {
-        final Screen screen = new Screen("/home/cornelius/src/github-screen/github-screen/src/main/resources/awesome.png");
+        final Screen screen = new Screen("/home/cornelius/src/github-screen/src/main/resources/awesome.png");
         final String resetRepositoryCommand = GithubService.INSTANCE.getResetRepositoryCommand("https://github.com/" + USERNAME + "/screen-slave");
         final String printSreenCommand = GithubService.INSTANCE.getPrintSreenCommand(screen);
 
